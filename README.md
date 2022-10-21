@@ -6,6 +6,9 @@ Azure AD Live Lookup for HelpSpot is a command line application that allows for 
 
 This application needs to be copied to a directory on your helpspot server that the web server process can execute and access. It will be called from HelpSpot via a PHP `exec()` function call. 
 
+### Download
+Download the latest release from https://github.com/helpspot/AzureLiveLookup/releases/latest/download/AzureLiveLookup.zip
+
 ### Azure AD App and .env Setup
 This application requires a .env file where your Microsoft Client settings are stored. To create this env file we'll need to follow these steps generate the file and then set up an enterprise app in Azure AD:
 1. Copy the .env.example file to .env
