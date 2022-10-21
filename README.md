@@ -29,7 +29,7 @@ In HelpSpot:
 
 Example:
 ```
-/opt/homebrew/bin/php /Users/user/web/AzureLiveLookup/azurelivelookup livelookup
+/usr/bin/php8.0 /var/www/helpspot/public/custom_code/AzureLiveLookup/azurelivelookup livelookup
 ```
 4. Save your settings.
 
