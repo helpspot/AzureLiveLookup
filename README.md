@@ -22,6 +22,12 @@ This application requires a .env file where your Microsoft Client settings are s
 8. Copy the `Secret ID` to the `MS_CLIENT_ID` variable in your `.env` file.
 9. Copy the `Value` to the `MS_CLIENT_SECRET` variable in your `.env` file.
 
+
+### Assign Azure Enterprise App Permissions
+The default search that is performed in this example needs the User.Read, User.Read.All and User.ReadBasic.All api permissions. These permissions are managed under the `API permissions` tab of your app registration.
+<img width="1037" alt="Screen Shot 2022-10-24 at 11 55 22 AM" src="https://user-images.githubusercontent.com/1500588/197593443-16bf7b02-b11b-44d1-b9dc-a16f4507c749.png">
+
+
 ### Live Lookup Source Setup in HelpSpot
 In HelpSpot:
 1. Navigate to `Admin > Settings > Live Lookup`
