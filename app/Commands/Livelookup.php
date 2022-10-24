@@ -65,14 +65,22 @@ class Livelookup extends Command
         $guzzle = new \GuzzleHttp\Client();
         $url = 'https://login.microsoftonline.com/' . config('app.MS_TENANT_ID') . '/oauth2/token?api-version=' . config('app.MS_GRAPH_API_VERSION');
 
-        $response  = json_decode($guzzle->post($url, [
-            'form_params' => [
-                'client_id' => config('app.MS_CLIENT_ID'),
-                'client_secret' => config('app.MS_CLIENT_SECRET'),
-                'resource' => 'https://graph.microsoft.com/',
-                'grant_type' => 'client_credentials',
-            ],
-        ])->getBody()->getContents());
+        try {
+            $response  = json_decode($guzzle->post($url, [
+                'form_params' => [
+                    'client_id' => config('app.MS_CLIENT_ID'),
+                    'client_secret' => config('app.MS_CLIENT_SECRET'),
+                    'resource' => 'https://graph.microsoft.com/',
+                    'grant_type' => 'client_credentials',
+                ],
+            ])->getBody()->getContents());   
+        }
+        catch (\GuzzleHttp\Exception\ClientException $e) {
+            echo \GuzzleHttp\Psr7\Message::toString($e->getRequest());
+            echo \GuzzleHttp\Psr7\Message::toString($e->getResponse());
+            die;
+        }
+        
 
         $graph = new Graph();
 
