@@ -69,7 +69,7 @@ return [
     'providers' => [
         App\Providers\AppServiceProvider::class,
     ],
-    
+
     /*
     |--------------------------------------------------------------------------
     | Microsoft Graph Credentials
@@ -79,8 +79,8 @@ return [
     | https://iknowthatnow.com/2022/03/31/how-to-use-microsoft-graph-api-with-laravel/
     */
 
-    'MS_TENANT_ID'=>env('MS_TENANT_ID'),
-    'MS_CLIENT_ID'=>env('MS_CLIENT_ID'),
-    'MS_CLIENT_SECRET'=>env('MS_CLIENT_SECRET'),
-    'MS_GRAPH_API_VERSION'=>'v1.0',
+    'MS_TENANT_ID' => env('MS_TENANT_ID'),
+    'MS_CLIENT_ID' => env('MS_CLIENT_ID'),
+    'MS_CLIENT_SECRET' => env('MS_CLIENT_SECRET'),
+    'MS_GRAPH_API_VERSION' => 'v1.0',
 ];

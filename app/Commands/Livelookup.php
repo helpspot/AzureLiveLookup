@@ -4,10 +4,8 @@ namespace App\Commands;
 
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
-use Microsoft\Graph\Exception\GraphException;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
-use Illuminate\View\View;
 
 class Livelookup extends Command
 {
@@ -63,46 +61,44 @@ class Livelookup extends Command
     private function connect()
     {
         $guzzle = new \GuzzleHttp\Client();
-        $url = 'https://login.microsoftonline.com/' . config('app.MS_TENANT_ID') . '/oauth2/token?api-version=' . config('app.MS_GRAPH_API_VERSION');
+        $url = 'https://login.microsoftonline.com/'.config('app.MS_TENANT_ID').'/oauth2/token?api-version='.config('app.MS_GRAPH_API_VERSION');
 
         try {
-            $response  = json_decode($guzzle->post($url, [
+            $response = json_decode($guzzle->post($url, [
                 'form_params' => [
                     'client_id' => config('app.MS_CLIENT_ID'),
                     'client_secret' => config('app.MS_CLIENT_SECRET'),
                     'resource' => 'https://graph.microsoft.com/',
                     'grant_type' => 'client_credentials',
                 ],
-            ])->getBody()->getContents());   
-        }
-        catch (\GuzzleHttp\Exception\ClientException $e) {
+            ])->getBody()->getContents());
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
             echo \GuzzleHttp\Psr7\Message::toString($e->getRequest());
             echo \GuzzleHttp\Psr7\Message::toString($e->getResponse());
-            die;
+            exit;
         }
-        
 
         $graph = new Graph();
 
-        return $graph->setBaseUrl("https://graph.microsoft.com")
+        return $graph->setBaseUrl('https://graph.microsoft.com')
             ->setApiVersion(config('app.MS_GRAPH_API_VERSION'))
             ->setAccessToken($response->access_token);
     }
 
     private function users($email)
     {
-
         $graph = self::connect();
 
         $query = '/users?$select=surName,givenName,mail,mobilephone,jobtitle&$expand=manager&$filter=mail eq \''.$email.'\'';
 
-        $results =  $graph->createRequest("get", $query)
-            ->addHeaders(array("Content-Type" => "application/json"))
+        $results = $graph->createRequest('get', $query)
+            ->addHeaders(['Content-Type' => 'application/json'])
             ->setReturnType(Model\User::class)
-            ->setTimeout("1000")
+            ->setTimeout('1000')
             ->execute();
-        
-        $xml =  view("livelookup",['results' => $results]);
+
+        $xml = view('livelookup', ['results' => $results]);
+
         return $xml;
     }
 }
