@@ -1,4 +1,5 @@
 # Azure AD Live Lookup For HelpSpot
+[![PHP Composer](https://github.com/helpspot/AzureLiveLookup/actions/workflows/php-build.yml/badge.svg)](https://github.com/helpspot/AzureLiveLookup/actions/workflows/php-build.yml)
 
 Azure AD Live Lookup for HelpSpot is a command line application that allows for livelookups against Azure AD using the Microsoft Graph API.
 
