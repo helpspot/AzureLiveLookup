@@ -5,7 +5,9 @@ Azure AD Live Lookup for HelpSpot is a command line application that allows for 
 
 ## Setup
 
-This application needs to be copied to a directory on your HelpSpot server that the web server process can execute and access. It will be called from HelpSpot via a PHP `exec()` function call. 
+This application needs to be copied to a directory on your HelpSpot server that the web server process can execute and access. It will be called from HelpSpot via a PHP `exec()` function call.
+
+Requires: PHP 8.0
 
 ### Download
 Download the latest release from https://github.com/helpspot/AzureLiveLookup/releases/latest/download/AzureLiveLookup.zip
