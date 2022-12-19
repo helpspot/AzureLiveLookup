@@ -6,7 +6,7 @@ if [ $# -eq 1 ]
 then
     VERSION="$1"
 else
-    VERSION=$(cat $DIR/helpspot/helpspot/version.txt)
+    VERSION=$(cat $DIR/version.txt)
 fi
 
 echo "Building AzureLiveLookup Version: $VERSION"

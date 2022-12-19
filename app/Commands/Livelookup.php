@@ -89,14 +89,14 @@ class Livelookup extends Command
     {
         $graph = self::connect();
 
-        $query = '/users?$select=surName,givenName,mail,mobilephone,jobtitle&$expand=manager&$filter=mail eq \''.$email.'\'';
+        $query = '/users?$select=surName,givenName,mail,mobilephone,businessPhones,jobtitle,employeeId&$expand=manager&$filter=mail eq \''.$email.'\'';
 
         $results = $graph->createRequest('get', $query)
             ->addHeaders(['Content-Type' => 'application/json'])
             ->setReturnType(Model\User::class)
             ->setTimeout('1000')
             ->execute();
-
+            
         $xml = view('livelookup', ['results' => $results]);
 
         return $xml;
