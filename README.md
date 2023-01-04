@@ -19,9 +19,9 @@ This application requires a .env file where your Microsoft Client settings are s
 3. In Azure Active Directory click on `App registrations`.
 4. Click on `New Registration`.
 5. Give the Application a name and select `Accounts in this organizational directory only` for the `Supported account type`.
-6. Select `API permissions` and add the `User.Read`, `User.Read.All` and `User.ReadBasic.All` permissions.
-7. Select `Certificates and Secrets` and create a new `Client Secret`.
-8. Copy the `Secret ID` to the `MS_CLIENT_ID` variable in your `.env` file.
+6. Copy the `Application ID` to the `MS_CLIENT_ID` variable in your `.env` file.
+7. Select `API permissions` and add the `User.Read`, `User.Read.All` and `User.ReadBasic.All` permissions.
+8. Select `Certificates and Secrets` and create a new `Client Secret`.
 9. Copy the `Value` to the `MS_CLIENT_SECRET` variable in your `.env` file.
 
 
