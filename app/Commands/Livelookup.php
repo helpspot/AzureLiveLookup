@@ -15,17 +15,17 @@ class Livelookup extends Command
      * @var string
      */
     protected $signature = 'livelookup
-    {source_id=""} 
-    {customer_id=" "}
-    {first_name=" "}
-    {last_name=" "}
-    {email=" "}
-    {phone=" "}
-    {request=" "}
-    {sUserID=" "}
-    {xStatus=" "}
-    {xCategory=" "}
-    {xPersonAssignedTo=" "}
+    {--source_id=""} 
+    {--customer_id=""}
+    {--first_name=""}
+    {--last_name=""}
+    {--email=""}
+    {--phone=""}
+    {--request=""}
+    {--sUserId=""}
+    {--xStatus=""}
+    {--xCategory=""}
+    {--xPersonAssignedTo=""}
     {other?*}
 ';
 
@@ -37,6 +37,17 @@ class Livelookup extends Command
     protected $description = 'Command description';
 
     /**
+     * Create a new console command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->ignoreValidationErrors();
+    }
+
+    /**
      * Execute the console command.
      *
      * @return mixed
@@ -44,7 +55,7 @@ class Livelookup extends Command
     public function handle()
     {
         $connection = $this->connect();
-        echo $this->users($this->argument('email'));
+        echo $this->users($this->option('email'),$this->option('first_name'),$this->option('last_name'));
     }
 
     /**
@@ -85,11 +96,11 @@ class Livelookup extends Command
             ->setAccessToken($response->access_token);
     }
 
-    private function users($email)
+    private function users($email,$first_name,$last_name)
     {
         $graph = self::connect();
 
-        $query = '/users?$select=surName,givenName,mail,mobilephone,businessPhones,jobtitle,employeeId&$expand=manager&$filter=mail eq \''.$email.'\'';
+        $query = '/users?$select=surName,givenName,mail,mobilephone,businessPhones,jobtitle,employeeId&$expand=manager&$filter=mail eq \''.$email.'\' or givenName eq \''.$first_name.'\' or surName eq \''.$last_name.'\'';
 
         $results = $graph->createRequest('get', $query)
             ->addHeaders(['Content-Type' => 'application/json'])
