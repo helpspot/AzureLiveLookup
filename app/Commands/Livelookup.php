@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
+use Illuminate\Support\Facades\Log;
 
 class Livelookup extends Command
 {
@@ -15,17 +16,17 @@ class Livelookup extends Command
      * @var string
      */
     protected $signature = 'livelookup
-    {--source_id=""} 
-    {--customer_id=""}
-    {--first_name=""}
-    {--last_name=""}
-    {--email=""}
-    {--phone=""}
-    {--request=""}
-    {--sUserId=""}
-    {--xStatus=""}
-    {--xCategory=""}
-    {--xPersonAssignedTo=""}
+    {--source_id=} 
+    {--customer_id=}
+    {--first_name=}
+    {--last_name=}
+    {--email=}
+    {--phone=}
+    {--request=}
+    {--sUserId=}
+    {--xStatus=}
+    {--xCategory=}
+    {--xPersonAssignedTo=}
     {other?*}
 ';
 
@@ -55,7 +56,11 @@ class Livelookup extends Command
     public function handle()
     {
         $connection = $this->connect();
-        echo $this->users($this->option('email'),$this->option('first_name'),$this->option('last_name'));
+        echo $this->users(
+            $this->option('email'),
+            $this->option('first_name'),
+            $this->option('last_name')
+        );
     }
 
     /**
@@ -99,8 +104,18 @@ class Livelookup extends Command
     private function users($email,$first_name,$last_name)
     {
         $graph = self::connect();
+        
+        //Build the base query string and add the fields that we wish to select.
+        $query = '/users?$select=surName,givenName,mail,mobilephone,businessPhones,jobtitle,employeeId&$expand=manager&';
 
-        $query = '/users?$select=surName,givenName,mail,mobilephone,businessPhones,jobtitle,employeeId&$expand=manager&$filter=mail eq \''.$email.'\' or givenName eq \''.$first_name.'\' or surName eq \''.$last_name.'\'';
+        //Add the appropriate filter. We prioritize email, last name, then first name.
+        if (!empty($email)) {
+            $query .= '$filter=mail eq \''.$email.'\'';
+        } elseif (!empty($last_name)) {
+            $query .= '$filter=surName eq \''.$last_name.'\'';
+        } elseif (!empty($first_name)) {
+            $query .= '$filter=givenName eq \''.$first_name.'\'';
+        }
 
         $results = $graph->createRequest('get', $query)
             ->addHeaders(['Content-Type' => 'application/json'])
