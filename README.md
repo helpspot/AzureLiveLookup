@@ -1,7 +1,7 @@
 # Azure AD Live Lookup For HelpSpot
 [![PHP Composer](https://github.com/helpspot/AzureLiveLookup/actions/workflows/php-build.yml/badge.svg)](https://github.com/helpspot/AzureLiveLookup/actions/workflows/php-build.yml)
 
-Azure AD Live Lookup for HelpSpot is a command line application that allows for livelookups against Azure AD using the Microsoft Graph API.
+Azure AD Live Lookup for HelpSpot is a command line application that allows for livelookups against Azure AD using the Microsoft Graph API. It has two options `livelookup` (exact matching queries ) and `livelookupfuzzy` (partial matching queries).
 
 ## Setup
 
@@ -34,7 +34,7 @@ The default search that is performed in this example needs the User.Read, User.R
 In HelpSpot:
 1. Navigate to `Admin > Settings > Live Lookup`
 2. Give the new source a name and select `Command Line` for the `Lookup Via` setting.
-3. The `Path to Script` settings needs the full path to your php cli executable followed by the full path to your azurelivelookup app with the parameter `livelookup`. 
+3. The `Path to Script` settings needs the full path to your php cli executable followed by the full path to your azurelivelookup app with the parameter `livelookup` or `livelookupfuzzy`. 
 
 Example:
 ```
