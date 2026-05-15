@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.3",
         "illuminate/view": "^9.0",
         "laravel-zero/framework": "^9.2",
         "microsoft/microsoft-graph": "^1.79",
@@ -43,6 +43,9 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "optimize-autoloader": true,
+        "platform": {
+            "php": "8.3"
+        },
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
