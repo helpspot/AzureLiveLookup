@@ -55,6 +55,13 @@ class LivelookupFuzzy extends Command
      */
     public function handle()
     {
+        // HelpSpot's empty single-quoted arguments arrive literally on Windows.
+        foreach (['email', 'first_name', 'last_name'] as $option) {
+            if ($this->option($option) === "''") {
+                $this->input->setOption($option, '');
+            }
+        }
+
         $connection = $this->connect();
         echo $this->users($this->option('email'),$this->option('first_name'),$this->option('last_name'));
 
