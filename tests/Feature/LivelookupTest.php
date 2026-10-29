@@ -16,7 +16,7 @@ class LivelookupTest extends TestCase
     public function test_lookup_uses_nonempty_search_options(string $commandClass, array $options, string $expectedSearch): void
     {
         $client = Mockery::mock('overload:GuzzleHttp\\Client');
-        $client->shouldReceive('post')->andReturnUsing(fn () => new Response(200, [], '{"access_token":"test-token"}'));
+        $client->shouldReceive('post')->once()->andReturnUsing(fn () => new Response(200, [], '{"access_token":"test-token"}'));
 
         $query = null;
         $graph = Mockery::mock('overload:Microsoft\\Graph\\Graph');
@@ -40,6 +40,73 @@ class LivelookupTest extends TestCase
 
         $this->assertSame(0, $exitCode);
         $this->assertSame($expectedSearch, substr($query, strpos($query, '&$'.(str_contains($commandClass, 'Fuzzy') ? 'search' : 'filter')) + 1));
+    }
+
+    /**
+     * @dataProvider transferFailures
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_transfer_failures_return_safe_xml(string $commandClass, string $stage, string $failure): void
+    {
+        $secret = 'fixture-secret+&<hidden>';
+        $request = new \GuzzleHttp\Psr7\Request('POST', 'https://example.test/token', [
+            'Authorization' => 'Bearer fixture-token',
+        ], http_build_query(['client_secret' => $secret]));
+        $message = 'Sensitive diagnostic '.$secret;
+        $exception = match ($failure) {
+            'client' => new \GuzzleHttp\Exception\ClientException($message, $request, new Response(401, [], $secret)),
+            'server' => new \GuzzleHttp\Exception\ServerException($message, $request, new Response(503, [], $secret)),
+            'connect' => new \GuzzleHttp\Exception\ConnectException($message, $request),
+            'transfer' => new \GuzzleHttp\Exception\TransferException($message),
+        };
+
+        $client = Mockery::mock('overload:GuzzleHttp\\Client');
+        if ($stage === 'token') {
+            $client->shouldReceive('post')->once()->andThrow($exception);
+        } else {
+            $client->shouldReceive('post')->once()->andReturn(new Response(200, [], '{"access_token":"fixture-token"}'));
+            $graph = Mockery::mock('overload:Microsoft\\Graph\\Graph');
+            $graph->shouldReceive('setBaseUrl', 'setApiVersion', 'setAccessToken', 'createRequest', 'addHeaders', 'setReturnType', 'setTimeout')->andReturnSelf();
+            $graph->shouldReceive('execute')->andThrow($exception);
+        }
+
+        $command = new $commandClass();
+        $command->setLaravel($this->app);
+        $console = new BufferedOutput();
+        ob_start();
+        try {
+            $exitCode = $command->run(new ArrayInput(['--email' => 'test@example.com']), $console);
+            $output = ob_get_contents();
+        } finally {
+            ob_end_clean();
+        }
+
+        $this->assertSame(1, $exitCode);
+        $this->assertSame('', $console->fetch());
+        $xml = simplexml_load_string($output);
+        $this->assertNotFalse($xml);
+        $this->assertSame('livelookup', $xml->getName());
+        $this->assertNotEmpty((string) $xml->error);
+        $this->assertStringNotContainsString($secret, $output);
+        $this->assertStringNotContainsString(urlencode($secret), $output);
+        $this->assertStringNotContainsString('fixture-token', $output);
+        $this->assertStringNotContainsString('Sensitive diagnostic', $output);
+        $this->assertStringNotContainsString('example.test', $output);
+    }
+
+    public static function transferFailures(): array
+    {
+        $cases = [];
+        foreach ([\App\Commands\Livelookup::class, \App\Commands\LivelookupFuzzy::class] as $command) {
+            foreach (['token', 'graph'] as $stage) {
+                foreach (['client', 'server', 'connect', 'transfer'] as $failure) {
+                    $cases[$command.' '.$stage.' '.$failure] = [$command, $stage, $failure];
+                }
+            }
+        }
+
+        return $cases;
     }
 
     public static function lookupOptions(): array

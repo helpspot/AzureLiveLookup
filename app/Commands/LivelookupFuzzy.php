@@ -62,8 +62,13 @@ class LivelookupFuzzy extends Command
             }
         }
 
-        $connection = $this->connect();
-        echo $this->users($this->option('email'),$this->option('first_name'),$this->option('last_name'));
+        try {
+            echo $this->users($this->option('email'),$this->option('first_name'),$this->option('last_name'));
+        } catch (\GuzzleHttp\Exception\TransferException $e) {
+            echo '<livelookup version="1.0"><error>Unable to complete the Azure lookup. Check the Azure credentials and network connection.</error></livelookup>';
+
+            return 1;
+        }
 
 }
 
@@ -83,22 +88,14 @@ class LivelookupFuzzy extends Command
         $guzzle = new \GuzzleHttp\Client();
         $url = 'https://login.microsoftonline.com/' . config('app.MS_TENANT_ID') . '/oauth2/token?api-version=' . config('app.MS_GRAPH_API_VERSION');
 
-        try {
-            $response  = json_decode($guzzle->post($url, [
-                'form_params' => [
-                    'client_id' => config('app.MS_CLIENT_ID'),
-                    'client_secret' => config('app.MS_CLIENT_SECRET'),
-                    'resource' => 'https://graph.microsoft.com/',
-                    'grant_type' => 'client_credentials',
-                ],
-            ])->getBody()->getContents());
-        }
-        catch (\GuzzleHttp\Exception\ClientException $e) {
-            echo \GuzzleHttp\Psr7\Message::toString($e->getRequest());
-            echo \GuzzleHttp\Psr7\Message::toString($e->getResponse());
-            die;
-        }
-
+        $response  = json_decode($guzzle->post($url, [
+            'form_params' => [
+                'client_id' => config('app.MS_CLIENT_ID'),
+                'client_secret' => config('app.MS_CLIENT_SECRET'),
+                'resource' => 'https://graph.microsoft.com/',
+                'grant_type' => 'client_credentials',
+            ],
+        ])->getBody()->getContents());
 
         $graph = new Graph();
 
